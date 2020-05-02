@@ -1,0 +1,9 @@
+tensorflow
+opencv-contrib-python
+imutils
+sklearn
+tensorflow-addons
+matplotlib
+tensorflow-datasets
+pillow
+docopt
