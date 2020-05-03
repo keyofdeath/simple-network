@@ -36,6 +36,13 @@ IMG_DIM = 32
 EPOCHS = 20
 BATCH_SIZE = 32
 LEARNING_RATE = 0.01
+LAYER_DIM = IMG_DIM * IMG_DIM * 3
+LAYERS = [
+    LAYER_DIM,
+    LAYER_DIM // 2,
+    LAYER_DIM // 4,
+    LAYER_DIM // 6
+]
 
 dataset = ImageCreatTrainDataset(DATASET, IMG_DIM)
 
@@ -45,10 +52,12 @@ train_x, train_y = dataset.get_train_data()
 test_x, test_y = dataset.get_test_data()
 labels, nb_labels = dataset.get_labels()
 
-PYTHON_LOGGER.info("First layer dim: {}".format(IMG_DIM * IMG_DIM * 3))
 model = Sequential()
 model.add(Flatten(input_shape=(IMG_DIM, IMG_DIM, 3)))
-model.add(Dense(IMG_DIM * IMG_DIM * 3, activation="relu"))
+for i, l in enumerate(LAYERS):
+    PYTHON_LOGGER.info("layer {} dim: {}".format(i + 1, l))
+    model.add(Dense(l, activation="relu"))
+
 model.add(Dense(nb_labels, activation="softmax"))
 
 loss = "categorical_crossentropy" if nb_labels > 2 else "binary_crossentropy"
@@ -77,5 +86,5 @@ plt.ylabel("Loss/Accuracy")
 plt.legend()
 plt.show()
 
-save_json_file({"img_dim": IMG_DIM, "labels": labels}, "model_1.json")
-model.save("model_1.h5")
+save_json_file({"img_dim": IMG_DIM, "labels": labels}, "model_2.json")
+model.save("model_2.h5")

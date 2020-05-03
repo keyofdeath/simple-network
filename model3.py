@@ -9,7 +9,8 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import classification_report
-from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.layers import Dense, Flatten, Dropout, BatchNormalization
+from tensorflow.keras.regularizers import l2
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import SGD
 
@@ -33,27 +34,36 @@ PYTHON_LOGGER.setLevel(logging.DEBUG)
 FOLDER_ABSOLUTE_PATH = os.path.normpath(os.path.dirname(os.path.abspath(__file__)))
 DATASET = os.path.join(FOLDER_ABSOLUTE_PATH, "dog_cat_dataset")
 IMG_DIM = 32
-EPOCHS = 20
-BATCH_SIZE = 32
+EPOCHS = 10
+BATCH_SIZE = 64
 LEARNING_RATE = 0.01
+LAYER_DIM = IMG_DIM * IMG_DIM * 3
+LAYERS = [
+    LAYER_DIM * 2,
+    LAYER_DIM,
+    LAYER_DIM // 2
+]
 
+# Dataset
 dataset = ImageCreatTrainDataset(DATASET, IMG_DIM)
-
 dataset.load_dataset()
-
 train_x, train_y = dataset.get_train_data()
 test_x, test_y = dataset.get_test_data()
 labels, nb_labels = dataset.get_labels()
 
-PYTHON_LOGGER.info("First layer dim: {}".format(IMG_DIM * IMG_DIM * 3))
 model = Sequential()
 model.add(Flatten(input_shape=(IMG_DIM, IMG_DIM, 3)))
-model.add(Dense(IMG_DIM * IMG_DIM * 3, activation="relu"))
+for i, l in enumerate(LAYERS):
+    PYTHON_LOGGER.info("layer {} dim: {}".format(i + 1, l))
+    model.add(Dense(l, activation="relu", kernel_regularizer=l2(0.0001)))
+    model.add(BatchNormalization())
+    model.add(Dropout(0.15))
+
 model.add(Dense(nb_labels, activation="softmax"))
 
 loss = "categorical_crossentropy" if nb_labels > 2 else "binary_crossentropy"
 
-sgd = SGD(LEARNING_RATE)
+sgd = SGD(lr=LEARNING_RATE, decay=LEARNING_RATE / EPOCHS, momentum=0.9)
 model.compile(loss=loss, optimizer=sgd, metrics=["accuracy"])
 H = model.fit(train_x, train_y, validation_data=(test_x, test_y), epochs=EPOCHS, batch_size=BATCH_SIZE)
 
@@ -77,5 +87,5 @@ plt.ylabel("Loss/Accuracy")
 plt.legend()
 plt.show()
 
-save_json_file({"img_dim": IMG_DIM, "labels": labels}, "model_1.json")
-model.save("model_1.h5")
+save_json_file({"img_dim": IMG_DIM, "labels": labels}, "model_3.json")
+model.save("model_3.h5")
