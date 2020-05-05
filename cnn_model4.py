@@ -35,8 +35,8 @@ PYTHON_LOGGER.setLevel(logging.DEBUG)
 FOLDER_ABSOLUTE_PATH = os.path.normpath(os.path.dirname(os.path.abspath(__file__)))
 DATASET = os.path.join(FOLDER_ABSOLUTE_PATH, "dog_cat_dataset")
 IMG_DIM = 224
-EPOCHS = 50
-BATCH_SIZE = 64
+EPOCHS = 25
+BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 
 # Dataset
