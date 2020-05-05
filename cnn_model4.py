@@ -6,16 +6,15 @@ from __future__ import absolute_import
 import logging.handlers
 import os
 
-import matplotlib.pyplot as plt
-import numpy as np
 from sklearn.metrics import classification_report
 from tensorflow.keras.applications import VGG16
-from tensorflow.keras.optimizers import SGD
-from tensorflow.keras.layers import Input
-from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import SGD
+
 from creat_train_dataset import ImageCreatTrainDataset
 from files_tools import save_json_file
 
